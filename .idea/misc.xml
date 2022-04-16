@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_restaurant.xml" value="0.218" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/font/courgette.xml" value="0.284375" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/layout/fragment_all_students.xml" value="0.23052536231884058" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/layout/placeholder_row_layout.xml" value="0.23052536231884058" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/layout/student_row_layout.xml" value="0.23052536231884058" />
       </map>
     </option>
   </component>
