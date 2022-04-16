@@ -37,9 +37,10 @@
 
                 <ImageView
                     android:id="@+id/student_imageView"
+                    loadImageFromUrl="@{student.imageUrl}"
                     android:layout_width="120dp"
                     android:layout_height="0dp"
-                    loadImageFromUrl="@{student.imageUrl}"
+                    android:background="@drawable/ic_placeholder"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
