@@ -8,6 +8,8 @@ data class Student(
     val age: Int,
     @SerializedName("firstName")
     val firstName: String,
+    @SerializedName("imageUrl")
+    val imageUrl: String?,
     @SerializedName("grade")
     val grade: Int,
     @SerializedName("id")
