@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkResult
 
@@ -25,6 +26,9 @@ class AllStudentsBinding {
                 is TextView -> {
                     view.isVisible = apiResponse is NetworkResult.Error
                     view.text = apiResponse?.message.toString()
+                }
+                is RecyclerView -> {
+                    view.isVisible = !(apiResponse is NetworkResult.Error)
                 }
             }
         }
