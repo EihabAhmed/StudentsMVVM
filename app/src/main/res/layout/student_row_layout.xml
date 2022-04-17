@@ -68,19 +68,16 @@
 
                 <TextView
                     android:id="@+id/age_textView"
+                    showText="@{student.age}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:ellipsize="end"
-                    android:fontFamily="@font/courgette"
-                    tools:text="Age"
-                    showText="@{student.age}"
-                    android:textColor="@color/titleColor"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textColor="@color/purple_700"
                     app:layout_constraintEnd_toEndOf="@+id/name_textView"
                     app:layout_constraintStart_toStartOf="@+id/name_textView"
-                    app:layout_constraintTop_toBottomOf="@+id/name_textView" />
+                    app:layout_constraintTop_toBottomOf="@+id/name_textView"
+                    tools:text="Age" />
 
                 <TextView
                     android:id="@+id/grade_textView"
@@ -89,12 +86,9 @@
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="12dp"
                     android:ellipsize="end"
-                    android:fontFamily="@font/courgette"
                     tools:text="Grade"
                     showText="@{student.grade}"
-                    android:textColor="@color/titleColor"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textColor="@color/purple_700"
                     app:layout_constraintEnd_toEndOf="@+id/age_textView"
                     app:layout_constraintStart_toStartOf="@+id/age_textView"
                     app:layout_constraintTop_toBottomOf="@+id/age_textView"
