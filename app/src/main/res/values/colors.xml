@@ -18,4 +18,5 @@
     <color name="cardBackgroundColor">@color/white</color>
     <color name="titleColor">@color/darker</color>
     <color name="backgroundColor">@color/lightGray</color>
+    <color name="colorPrimary">#6200EE</color>
 </resources>

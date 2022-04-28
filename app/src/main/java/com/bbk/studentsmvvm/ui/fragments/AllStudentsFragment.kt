@@ -14,8 +14,8 @@ import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
 import com.bbk.studentsmvvm.databinding.FragmentAllStudentsBinding
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
+import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
-import com.bbk.studentsmvvm.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -27,8 +27,8 @@ class AllStudentsFragment : Fragment() {
     private var _binding: FragmentAllStudentsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var mainViewModel: MainViewModel
     private lateinit var allStudentsViewModel: AllStudentsViewModel
+    private lateinit var dataStoreViewModel: DataStoreViewModel
     private val mAdapter by lazy { AllStudentsAdapter() }
 
     private lateinit var networkListener: NetworkListener
@@ -36,9 +36,9 @@ class AllStudentsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        allStudentsViewModel =
-            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        dataStoreViewModel =
+            ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -48,12 +48,12 @@ class AllStudentsFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentAllStudentsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.mainViewModel = mainViewModel
+        binding.allStudentsViewModel = allStudentsViewModel
 
         setupRecyclerView()
 
-        allStudentsViewModel.readBackOnline.observe(viewLifecycleOwner) {
-            allStudentsViewModel.backOnline = it
+        dataStoreViewModel.readBackOnline.observe(viewLifecycleOwner) {
+            dataStoreViewModel.backOnline = it
         }
 
         lifecycleScope.launchWhenStarted {
@@ -61,8 +61,8 @@ class AllStudentsFragment : Fragment() {
             networkListener.checkNetworkAvailability(requireContext())
                 .collect { status ->
                     Log.d("NetworkListener", status.toString())
-                    allStudentsViewModel.networkStatus = status
-                    allStudentsViewModel.showNetworkStatus()
+                    dataStoreViewModel.networkStatus = status
+                    dataStoreViewModel.showNetworkStatus()
 
                     lifecycleScope.launch {
                         requestApiData()
@@ -81,8 +81,8 @@ class AllStudentsFragment : Fragment() {
 
     private fun requestApiData() {
         Log.d("AllStudentsFragment", "requestApiData called!")
-        mainViewModel.getAllStudents()
-        mainViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
+        allStudentsViewModel.getAllStudents()
+        allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     hideShimmerEffect()

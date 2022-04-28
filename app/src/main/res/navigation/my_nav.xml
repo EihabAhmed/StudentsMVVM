@@ -3,11 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/allStudentsFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/allStudentsFragment"
         android:name="com.bbk.studentsmvvm.ui.fragments.AllStudentsFragment"
         android:label="All Students"
         tools:layout="@layout/fragment_all_students" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.bbk.studentsmvvm.ui.fragments.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_allStudentsFragment"
+            app:destination="@id/allStudentsFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.bbk.studentsmvvm.ui.fragments.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_allStudentsFragment"
+            app:destination="@id/allStudentsFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
