@@ -8,6 +8,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkResult
+import com.bbk.studentsmvvm.util.UserData
 
 class AllStudentsBinding {
 
@@ -28,7 +29,7 @@ class AllStudentsBinding {
                     view.text = apiResponse?.message.toString()
                 }
                 is RecyclerView -> {
-                    view.isVisible = !(apiResponse is NetworkResult.Error)
+                    view.isVisible = apiResponse !is NetworkResult.Error
                 }
             }
         }

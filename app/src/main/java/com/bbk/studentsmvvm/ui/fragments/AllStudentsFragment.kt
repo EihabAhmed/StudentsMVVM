@@ -14,6 +14,7 @@ import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
 import com.bbk.studentsmvvm.databinding.FragmentAllStudentsBinding
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
+import com.bbk.studentsmvvm.util.UserData
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,7 @@ class AllStudentsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.allStudentsViewModel = allStudentsViewModel
 
+        binding.userNameTextView.text = "Welcome ${UserData.userName}"
         setupRecyclerView()
 
         dataStoreViewModel.readBackOnline.observe(viewLifecycleOwner) {
@@ -68,6 +70,10 @@ class AllStudentsFragment : Fragment() {
                         requestApiData()
                     }
                 }
+        }
+
+        if (!UserData.isAdmin) {
+            binding.addStudentFab.visibility = View.INVISIBLE
         }
 
         return binding.root
