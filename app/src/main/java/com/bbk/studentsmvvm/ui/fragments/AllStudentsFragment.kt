@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bbk.studentsmvvm.R
 import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
@@ -75,7 +75,9 @@ class AllStudentsFragment : Fragment() {
                 }
         }
 
-        if (!UserData.isAdmin) {
+        if (UserData.isAdmin) {
+            binding.addStudentFab.visibility = View.VISIBLE
+        } else {
             binding.addStudentFab.visibility = View.INVISIBLE
         }
 
@@ -89,15 +91,28 @@ class AllStudentsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.reload_menu, menu)
+        inflater.inflate(R.menu.all_students_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_reload) {
             requestApiData()
+        } else if (item.itemId == R.id.menu_logout) {
+            logout()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun logout() {
+        UserData.userName = ""
+        UserData.token = ""
+        UserData.isAdmin = false
+
+        dataStoreViewModel.saveUserName(UserData.userName)
+        dataStoreViewModel.saveToken(UserData.token)
+
+        findNavController().navigate(R.id.action_allStudentsFragment_to_loginFragment)
     }
 
     private fun readDatabase() {
@@ -124,27 +139,35 @@ class AllStudentsFragment : Fragment() {
 
     private fun requestApiData() {
         Log.d("AllStudentsFragment", "requestApiData called!")
-        allStudentsViewModel.deleteAllStudents()
-        allStudentsViewModel.getAllStudents()
-        allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is NetworkResult.Success -> {
-                    hideShimmerEffect()
-                    response.data?.let { mAdapter.setData(it) }
-                }
-                is NetworkResult.Error -> {
-                    hideShimmerEffect()
-                    loadDataFromCache()
-                    Toast.makeText(
-                        requireContext(),
-                        response.message.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                is NetworkResult.Loading -> {
-                    showShimmerEffect()
+        if (dataStoreViewModel.networkStatus) {
+            allStudentsViewModel.deleteAllStudents()
+            allStudentsViewModel.getAllStudents()
+            allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
+                when (response) {
+                    is NetworkResult.Success -> {
+                        hideShimmerEffect()
+                        response.data?.let { mAdapter.setData(it) }
+                    }
+                    is NetworkResult.Error -> {
+                        hideShimmerEffect()
+                        loadDataFromCache()
+                        Toast.makeText(
+                            requireContext(),
+                            response.message.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is NetworkResult.Loading -> {
+                        showShimmerEffect()
+                    }
                 }
             }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "No Internet Connection.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

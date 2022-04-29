@@ -98,27 +98,33 @@ class SplashFragment : Fragment() {
 
     private fun requestIsAdmin() {
         Log.d("SplashFragment", "requestIsAdmin called!")
-        loginViewModel.checkAdmin(UserData.userName)
-        loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is NetworkResult.Success -> {
-                    UserData.isAdmin = response.data?.admin ?: false
-                    findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
-                }
-                is NetworkResult.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        response.message.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
 
-                    UserData.isAdmin = false
-                    findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
-                }
-                is NetworkResult.Loading -> {
-                    showLoading()
+        if (dataStoreViewModel.networkStatus) {
+            loginViewModel.checkAdmin(UserData.userName)
+            loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
+                when (response) {
+                    is NetworkResult.Success -> {
+                        UserData.isAdmin = response.data?.admin ?: false
+                        findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
+                    }
+                    is NetworkResult.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            response.message.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        UserData.isAdmin = false
+                        findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
+                    }
+                    is NetworkResult.Loading -> {
+                        showLoading()
+                    }
                 }
             }
+        } else {
+            UserData.isAdmin = false
+            findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
         }
     }
 

@@ -11,4 +11,5 @@
     <string name="create_one">Create one</string>
     <string name="splash">Splash</string>
     <string name="reload">Reload</string>
+    <string name="logout">Logout</string>
 </resources>

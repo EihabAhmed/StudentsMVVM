@@ -9,7 +9,13 @@
         android:id="@+id/allStudentsFragment"
         android:name="com.bbk.studentsmvvm.ui.fragments.AllStudentsFragment"
         android:label="All Students"
-        tools:layout="@layout/fragment_all_students" />
+        tools:layout="@layout/fragment_all_students" >
+        <action
+            android:id="@+id/action_allStudentsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/allStudentsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.bbk.studentsmvvm.ui.fragments.LoginFragment"

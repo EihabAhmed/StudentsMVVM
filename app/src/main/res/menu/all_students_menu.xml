@@ -11,4 +11,12 @@
         app:showAsAction="ifRoom"
         tools:targetApi="o" />
 
+    <item
+        android:id="@+id/menu_logout"
+        android:icon="@drawable/ic_logout"
+        android:iconTint="@color/white"
+        android:title="@string/logout"
+        app:showAsAction="ifRoom"
+        tools:targetApi="o" />
+
 </menu>

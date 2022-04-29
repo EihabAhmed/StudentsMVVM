@@ -50,6 +50,16 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.loginViewModel = loginViewModel
 
+        lifecycleScope.launchWhenStarted {
+            networkListener = NetworkListener()
+            networkListener.checkNetworkAvailability(requireContext())
+                .collect { status ->
+                    Log.d("NetworkListener", status.toString())
+                    dataStoreViewModel.networkStatus = status
+                    dataStoreViewModel.showNetworkStatus()
+                }
+        }
+
         binding.loginButton.setOnClickListener {
 
             val userName = binding.loginEmailEditText.text.toString()
@@ -73,8 +83,17 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch {
-                login(userName, password)
+            if (dataStoreViewModel.networkStatus) {
+                showLoading()
+                lifecycleScope.launch {
+                    login(userName, password)
+                }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "No Internet Connection.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -83,6 +102,7 @@ class LoginFragment : Fragment() {
 
     private fun requestIsAdmin() {
         Log.d("LoginFragment", "requestIsAdmin called!")
+        loginViewModel.isAdminResponse.value = NetworkResult.Loading()
         loginViewModel.checkAdmin(UserData.userName)
         loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
@@ -116,7 +136,11 @@ class LoginFragment : Fragment() {
                     UserData.token = response.data?.token!!
                     dataStoreViewModel.saveToken(UserData.token)
                     dataStoreViewModel.saveUserName(UserData.userName)
-                    requestIsAdmin()
+
+                    lifecycleScope.launch {
+                        requestIsAdmin()
+                    }
+
                 }
                 is NetworkResult.Error -> {
                     hideLoading()
