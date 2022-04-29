@@ -10,6 +10,10 @@ class Constants {
         const val PREFERENCES_BACK_ONLINE = "backOnline"
         const val TOKEN = "token"
         const val USER_NAME = "user_name"
+
+        // ROOM Database
+        const val DATABASE_NAME = "students_database"
+        const val STUDENT_TABLE = "student_table"
     }
 
 }

@@ -12,9 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
 import com.bbk.studentsmvvm.databinding.FragmentAllStudentsBinding
+import com.bbk.studentsmvvm.models.Student
+import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
 import com.bbk.studentsmvvm.util.UserData
+import com.bbk.studentsmvvm.util.observeOnce
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,9 +69,7 @@ class AllStudentsFragment : Fragment() {
                     dataStoreViewModel.networkStatus = status
                     dataStoreViewModel.showNetworkStatus()
 
-                    lifecycleScope.launch {
-                        requestApiData()
-                    }
+                    readDatabase()
                 }
         }
 
@@ -85,6 +86,28 @@ class AllStudentsFragment : Fragment() {
         showShimmerEffect()
     }
 
+    private fun readDatabase() {
+        lifecycleScope.launch {
+            allStudentsViewModel.readStudents.observeOnce(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("AllStudentsFragment", "readDatabase called!")
+
+                    val studentList = mutableListOf<Student>()
+                    for (studentEntity in database) {
+                        studentList.add(studentEntity.student)
+                    }
+
+                    val students = Students(studentList)
+
+                    mAdapter.setData(students)
+                    hideShimmerEffect()
+                } else {
+                    requestApiData()
+                }
+            }
+        }
+    }
+
     private fun requestApiData() {
         Log.d("AllStudentsFragment", "requestApiData called!")
         allStudentsViewModel.getAllStudents()
@@ -96,6 +119,7 @@ class AllStudentsFragment : Fragment() {
                 }
                 is NetworkResult.Error -> {
                     hideShimmerEffect()
+                    loadDataFromCache()
                     Toast.makeText(
                         requireContext(),
                         response.message.toString(),
@@ -104,6 +128,23 @@ class AllStudentsFragment : Fragment() {
                 }
                 is NetworkResult.Loading -> {
                     showShimmerEffect()
+                }
+            }
+        }
+    }
+
+    private fun loadDataFromCache() {
+        lifecycleScope.launch {
+            allStudentsViewModel.readStudents.observe(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    val studentList = mutableListOf<Student>()
+                    for (studentEntity in database) {
+                        studentList.add(studentEntity.student)
+                    }
+
+                    val students = Students(studentList)
+
+                    mAdapter.setData(students)
                 }
             }
         }

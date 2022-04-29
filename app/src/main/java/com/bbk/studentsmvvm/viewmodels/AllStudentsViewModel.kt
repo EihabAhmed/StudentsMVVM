@@ -4,13 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.bbk.studentsmvvm.data.Repository
+import com.bbk.studentsmvvm.data.database.entities.StudentEntity
+import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
@@ -20,6 +21,24 @@ class AllStudentsViewModel @Inject constructor(
     private val repository: Repository,
     application: Application
 ) : AndroidViewModel(application) {
+
+    /** ROOM DATABASE */
+    val readStudents: LiveData<List<StudentEntity>> = repository.local.readStudents().asLiveData()
+
+    private fun insertStudent(studentEntity: StudentEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertStudent(studentEntity)
+        }
+
+    fun deleteStudent(studentEntity: StudentEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteStudent(studentEntity)
+        }
+
+    fun deleteAllStudents() =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteAllStudents()
+        }
 
     /** RETROFIT */
     var allStudentsResponse: MutableLiveData<NetworkResult<Students>> = MutableLiveData()
@@ -35,16 +54,24 @@ class AllStudentsViewModel @Inject constructor(
                 val response = repository.remote.getAllStudents()
                 allStudentsResponse.value = handleAllStudentsResponse(response)
 
-//                val students = allStudentsResponse.value!!.data
-//                if (students != null) {
-//                    offlineCacheRecipes(foodRecipe)
-//                }
+                val students = allStudentsResponse.value!!.data
+                if (students != null) {
+                    offlineCacheStudents(students)
+                }
             } catch (e: Exception) {
                 allStudentsResponse.value = NetworkResult.Error("No students found.")
             }
         } else {
             allStudentsResponse.value = NetworkResult.Error("No Internet Connection.")
         }
+    }
+
+    private fun offlineCacheStudents(students: Students) {
+        for (student in students.students) {
+            val studentEntity = StudentEntity(student)
+            insertStudent(studentEntity)
+        }
+
     }
 
     private fun handleAllStudentsResponse(response: Response<Students>): NetworkResult<Students> {

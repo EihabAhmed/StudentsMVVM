@@ -112,7 +112,8 @@ class SplashFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                    UserData.isAdmin = false
+                    findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
                 }
                 is NetworkResult.Loading -> {
                     showLoading()
