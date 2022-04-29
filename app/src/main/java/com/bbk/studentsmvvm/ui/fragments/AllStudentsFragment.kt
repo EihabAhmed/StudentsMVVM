@@ -2,14 +2,14 @@ package com.bbk.studentsmvvm.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bbk.studentsmvvm.R
 import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
 import com.bbk.studentsmvvm.databinding.FragmentAllStudentsBinding
 import com.bbk.studentsmvvm.models.Student
@@ -54,6 +54,8 @@ class AllStudentsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.allStudentsViewModel = allStudentsViewModel
 
+        setHasOptionsMenu(true)
+
         binding.userNameTextView.text = "Welcome ${UserData.userName}"
         setupRecyclerView()
 
@@ -86,6 +88,18 @@ class AllStudentsFragment : Fragment() {
         showShimmerEffect()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.reload_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_reload) {
+            requestApiData()
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun readDatabase() {
         lifecycleScope.launch {
             allStudentsViewModel.readStudents.observeOnce(viewLifecycleOwner) { database ->
@@ -110,6 +124,7 @@ class AllStudentsFragment : Fragment() {
 
     private fun requestApiData() {
         Log.d("AllStudentsFragment", "requestApiData called!")
+        allStudentsViewModel.deleteAllStudents()
         allStudentsViewModel.getAllStudents()
         allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
