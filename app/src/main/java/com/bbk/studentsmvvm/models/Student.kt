@@ -1,8 +1,11 @@
 package com.bbk.studentsmvvm.models
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Student(
     @SerializedName("id")
     val id: Int,
@@ -13,6 +16,6 @@ data class Student(
     @SerializedName("grade")
     val grade: Int,
     @SerializedName("imageUrl")
-    val imageUrl: String?,
+    val imageUrl: String?
 
-)
+) : Parcelable

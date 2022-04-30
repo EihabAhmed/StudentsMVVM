@@ -9,8 +9,8 @@ import retrofit2.http.*
 
 interface StudentsApi {
 
-    @GET("/StudentsAuthorize/api/IsAdmin")
-    //@GET("/eihab/api/IsAdmin")
+    //@GET("/StudentsAuthorize/api/IsAdmin")
+    @GET("/eihab/api/IsAdmin")
     suspend fun isAdmin(
         @Query("username") username: String,
         @Header("Accept") accept: String = "application/json",
@@ -18,8 +18,8 @@ interface StudentsApi {
     ): Response<Admin>
 
     @FormUrlEncoded
-    @POST("/StudentsAuthorize/token")
-    //@POST("/eihab/token")
+    //@POST("/StudentsAuthorize/token")
+    @POST("/eihab/token")
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String,
@@ -28,8 +28,8 @@ interface StudentsApi {
         @Header("Accept") accept: String = "application/json"
     ): Response<Token>
 
-    @GET("/StudentsAuthorize/api/students")
-    //@GET("/eihab/api/students")
+    //@GET("/StudentsAuthorize/api/students")
+    @GET("/eihab/api/students")
     suspend fun getAllStudents(
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Students>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="student"
             type="com.bbk.studentsmvvm.models.Student" />
@@ -11,6 +12,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/studentRowLayout"
+        onStudentClickListener="@{student}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -72,7 +74,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:ellipsize="end"
                     android:textColor="@color/purple_700"
                     app:layout_constraintEnd_toEndOf="@+id/name_textView"
                     app:layout_constraintStart_toStartOf="@+id/name_textView"
@@ -81,18 +82,17 @@
 
                 <TextView
                     android:id="@+id/grade_textView"
+                    showText="@{student.grade}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="12dp"
-                    android:ellipsize="end"
-                    tools:text="Grade"
-                    showText="@{student.grade}"
                     android:textColor="@color/purple_700"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/age_textView"
                     app:layout_constraintStart_toStartOf="@+id/age_textView"
                     app:layout_constraintTop_toBottomOf="@+id/age_textView"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    tools:text="Grade" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

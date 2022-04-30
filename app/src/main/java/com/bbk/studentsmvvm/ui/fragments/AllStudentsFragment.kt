@@ -37,6 +37,8 @@ class AllStudentsFragment : Fragment() {
 
     private lateinit var networkListener: NetworkListener
 
+    private var firstStart = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,7 +77,21 @@ class AllStudentsFragment : Fragment() {
             dataStoreViewModel.backOnline = it
         }
 
+        if (firstStart) {
+            firstStart = false
+        } else {
+            lifecycleScope.launchWhenStarted {
+                networkListener = NetworkListener()
+                networkListener.checkNetworkAvailability(requireContext())
+                    .collect { status ->
+                        Log.d("NetworkListener", status.toString())
+                        dataStoreViewModel.networkStatus = status
+                        dataStoreViewModel.showNetworkStatus()
 
+                        readDatabase()
+                    }
+            }
+        }
 
         if (UserData.isAdmin) {
             binding.addStudentFab.visibility = View.VISIBLE
