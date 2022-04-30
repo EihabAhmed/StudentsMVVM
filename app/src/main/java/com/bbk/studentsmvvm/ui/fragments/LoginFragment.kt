@@ -39,6 +39,16 @@ class LoginFragment : Fragment() {
         loginViewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
         dataStoreViewModel =
             ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
+
+        lifecycleScope.launchWhenStarted {
+            networkListener = NetworkListener()
+            networkListener.checkNetworkAvailability(requireContext())
+                .collect { status ->
+                    Log.d("NetworkListener", status.toString())
+                    dataStoreViewModel.networkStatus = status
+                    dataStoreViewModel.showNetworkStatus()
+                }
+        }
     }
 
     override fun onCreateView(
@@ -50,15 +60,7 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.loginViewModel = loginViewModel
 
-        lifecycleScope.launchWhenStarted {
-            networkListener = NetworkListener()
-            networkListener.checkNetworkAvailability(requireContext())
-                .collect { status ->
-                    Log.d("NetworkListener", status.toString())
-                    dataStoreViewModel.networkStatus = status
-                    dataStoreViewModel.showNetworkStatus()
-                }
-        }
+
 
         binding.loginButton.setOnClickListener {
 

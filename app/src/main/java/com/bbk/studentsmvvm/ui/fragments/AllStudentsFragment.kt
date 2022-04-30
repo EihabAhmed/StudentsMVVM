@@ -43,6 +43,18 @@ class AllStudentsFragment : Fragment() {
         allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel =
             ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
+
+        lifecycleScope.launchWhenStarted {
+            networkListener = NetworkListener()
+            networkListener.checkNetworkAvailability(requireContext())
+                .collect { status ->
+                    Log.d("NetworkListener", status.toString())
+                    dataStoreViewModel.networkStatus = status
+                    dataStoreViewModel.showNetworkStatus()
+
+                    readDatabase()
+                }
+        }
     }
 
     override fun onCreateView(
@@ -63,17 +75,7 @@ class AllStudentsFragment : Fragment() {
             dataStoreViewModel.backOnline = it
         }
 
-        lifecycleScope.launchWhenStarted {
-            networkListener = NetworkListener()
-            networkListener.checkNetworkAvailability(requireContext())
-                .collect { status ->
-                    Log.d("NetworkListener", status.toString())
-                    dataStoreViewModel.networkStatus = status
-                    dataStoreViewModel.showNetworkStatus()
 
-                    readDatabase()
-                }
-        }
 
         if (UserData.isAdmin) {
             binding.addStudentFab.visibility = View.VISIBLE

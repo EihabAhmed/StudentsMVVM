@@ -34,16 +34,30 @@ class SplashFragment : Fragment() {
     private lateinit var networkListener: NetworkListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("eeee", "onCreate")
+
         super.onCreate(savedInstanceState)
 
         loginViewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
+
+        lifecycleScope.launchWhenStarted {
+            networkListener = NetworkListener()
+            networkListener.checkNetworkAvailability(requireContext())
+                .collect { status ->
+                    Log.d("NetworkListener", status.toString())
+                    dataStoreViewModel.networkStatus = status
+                    dataStoreViewModel.showNetworkStatus()
+                }
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("eeee", "onCreateView")
+
         // Inflate the layout for this fragment
         _binding = FragmentSplashBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
@@ -84,13 +98,7 @@ class SplashFragment : Fragment() {
                 }
             }
 
-            networkListener = NetworkListener()
-            networkListener.checkNetworkAvailability(requireContext())
-                .collect { status ->
-                    Log.d("NetworkListener", status.toString())
-                    dataStoreViewModel.networkStatus = status
-                    dataStoreViewModel.showNetworkStatus()
-                }
+
         }
 
         return binding.root
