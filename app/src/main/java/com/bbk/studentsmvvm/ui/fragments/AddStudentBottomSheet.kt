@@ -6,29 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bbk.studentsmvvm.R
-import com.bbk.studentsmvvm.databinding.FragmentLoginBinding
+import com.bbk.studentsmvvm.databinding.AddStudentBottomSheetBinding
+import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
 import com.bbk.studentsmvvm.util.UserData
+import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
-import com.bbk.studentsmvvm.viewmodels.LoginViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
-@ExperimentalCoroutinesApi
-@AndroidEntryPoint
-class LoginFragment : Fragment() {
+class AddStudentBottomSheet : BottomSheetDialogFragment() {
 
-    private var _binding: FragmentLoginBinding? = null
+    private var _binding: AddStudentBottomSheetBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var allStudentsViewModel: AllStudentsViewModel
     private lateinit var dataStoreViewModel: DataStoreViewModel
 
     private lateinit var networkListener: NetworkListener
@@ -36,7 +32,7 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loginViewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
+        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {
@@ -55,28 +51,49 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
-        binding.loginViewModel = loginViewModel
+        _binding = AddStudentBottomSheetBinding.inflate(inflater, container, false)
 
-        binding.loginButton.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
 
-            val userName = binding.loginEmailEditText.text.toString()
-            val password = binding.loginPasswordEditText.text.toString()
+            val name = binding.nameEt.text.toString()
+            val age = binding.ageEt.text.toString()
+            val grade = binding.gradeEt.text.toString()
+            val imageUrl = binding.imgEt.text.toString()
 
-            if (userName.isBlank()) {
+            if (name.isBlank()) {
                 Toast.makeText(
                     requireContext(),
-                    "Please enter your email",
+                    "Please enter name",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
 
-            if (password.isBlank()) {
+            if (age.isBlank()) {
                 Toast.makeText(
                     requireContext(),
-                    "Please enter your password",
+                    "Please enter age",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (grade.isBlank()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter grade",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val student: Student
+            try {
+                student = Student(0, name, age.toInt(), grade.toInt(), imageUrl)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    requireContext(),
+                    e.message,
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
@@ -84,10 +101,13 @@ class LoginFragment : Fragment() {
 
             if (dataStoreViewModel.networkStatus) {
                 showLoading()
+
                 lifecycleScope.launch {
-                    login(userName, password)
+                    addStudent(student)
                 }
             } else {
+                hideLoading()
+
                 Toast.makeText(
                     requireContext(),
                     "No Internet Connection.",
@@ -99,47 +119,14 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
-    private fun requestIsAdmin() {
-        Log.d("LoginFragment", "requestIsAdmin called!")
-        loginViewModel.isAdminResponse.value = NetworkResult.Loading()
-        loginViewModel.checkAdmin(UserData.userName)
-        loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
+    private fun addStudent(student: Student) {
+        Log.d("AddStudentBottomSheet", "addStudent called!")
+        allStudentsViewModel.addStudent(student)
+        allStudentsViewModel.addStudentResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
-                    UserData.isAdmin = response.data?.admin ?: false
-                    findNavController().navigate(R.id.action_loginFragment_to_allStudentsFragment)
-                }
-                is NetworkResult.Error -> {
-                    hideLoading()
-                    Toast.makeText(
-                        requireContext(),
-                        response.message.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                is NetworkResult.Loading -> {
-                    showLoading()
-                }
-            }
-        }
-    }
-
-    private fun login(userName: String, password: String) {
-        Log.d("LoginFragment", "login called!")
-        loginViewModel.login(userName, password)
-        loginViewModel.loginResponse.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is NetworkResult.Success -> {
-                    //hideLoading()
-                    UserData.userName = userName
-                    UserData.token = response.data?.token!!
-                    dataStoreViewModel.saveToken(UserData.token)
-                    dataStoreViewModel.saveUserName(UserData.userName)
-
-                    lifecycleScope.launch {
-                        requestIsAdmin()
-                    }
-
+                    val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToAllStudentsFragment(true)
+                    findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
                     hideLoading()
@@ -157,13 +144,13 @@ class LoginFragment : Fragment() {
     }
 
     private fun showLoading() {
-        binding.loginScreenLayout.visibility = View.VISIBLE
-        binding.loginLoading.visibility = View.VISIBLE
+        binding.addProgress.visibility = View.VISIBLE
+        binding.btnAdd.visibility = View.INVISIBLE
     }
 
     private fun hideLoading() {
-        binding.loginScreenLayout.visibility = View.INVISIBLE
-        binding.loginLoading.visibility = View.INVISIBLE
+        binding.addProgress.visibility = View.INVISIBLE
+        binding.btnAdd.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

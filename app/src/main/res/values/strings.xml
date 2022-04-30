@@ -12,4 +12,10 @@
     <string name="splash">Splash</string>
     <string name="reload">Reload</string>
     <string name="logout">Logout</string>
+    <string name="add_student">Add Student</string>
+    <string name="name">Name</string>
+    <string name="age">Age</string>
+    <string name="grade">Grade</string>
+    <string name="image_url">Image URL</string>
+    <string name="add">Add</string>
 </resources>

@@ -2,6 +2,7 @@ package com.bbk.studentsmvvm.data
 
 import com.bbk.studentsmvvm.data.network.StudentsApi
 import com.bbk.studentsmvvm.models.Admin
+import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.models.Token
 import retrofit2.Response
@@ -21,5 +22,9 @@ class RemoteDataSource @Inject constructor(
 
     suspend fun getAllStudents(): Response<Students> {
         return studentsApi.getAllStudents()
+    }
+
+    suspend fun addStudent(student: Student): Response<Student> {
+        return studentsApi.addStudent(student)
     }
 }

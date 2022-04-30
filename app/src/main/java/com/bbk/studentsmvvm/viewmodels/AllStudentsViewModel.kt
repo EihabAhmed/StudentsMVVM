@@ -42,9 +42,14 @@ class AllStudentsViewModel @Inject constructor(
 
     /** RETROFIT */
     var allStudentsResponse: MutableLiveData<NetworkResult<Students>> = MutableLiveData()
+    var addStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
 
     fun getAllStudents() = viewModelScope.launch {
         getAllStudentsSafeCall()
+    }
+
+    fun addStudent(student: Student) = viewModelScope.launch {
+        addStudentSafeCall(student)
     }
 
     private suspend fun getAllStudentsSafeCall() {
@@ -63,6 +68,20 @@ class AllStudentsViewModel @Inject constructor(
             }
         } else {
             allStudentsResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun addStudentSafeCall(student: Student) {
+        addStudentResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.addStudent(student)
+                addStudentResponse.value = handleAddStudentResponse(response)
+            } catch (e: Exception) {
+                addStudentResponse.value = NetworkResult.Error("Error adding student")
+            }
+        } else {
+            addStudentResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 
@@ -88,6 +107,27 @@ class AllStudentsViewModel @Inject constructor(
             response.isSuccessful -> {
                 val students = response.body()
                 return NetworkResult.Success(students!!)
+            }
+            else -> {
+                return NetworkResult.Error(response.message())
+            }
+        }
+    }
+
+    private fun handleAddStudentResponse(response: Response<Student>): NetworkResult<Student> {
+        when {
+            response.message().toString().contains("timeout") -> {
+                return NetworkResult.Error("Timeout")
+            }
+            response.code() == 402 -> {
+                return NetworkResult.Error("API Key Limited.")
+            }
+            response.body()!!.firstName.isNullOrBlank() -> {
+                return NetworkResult.Error("Error adding student")
+            }
+            response.isSuccessful -> {
+                val student = response.body()
+                return NetworkResult.Success(student!!)
             }
             else -> {
                 return NetworkResult.Error(response.message())

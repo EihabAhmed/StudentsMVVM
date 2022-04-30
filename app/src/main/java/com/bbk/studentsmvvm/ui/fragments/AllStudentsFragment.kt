@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bbk.studentsmvvm.R
 import com.bbk.studentsmvvm.adapters.AllStudentsAdapter
@@ -27,6 +28,8 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class AllStudentsFragment : Fragment() {
+
+    private val args by navArgs<AllStudentsFragmentArgs>()
 
     private var _binding: FragmentAllStudentsBinding? = null
     private val binding get() = _binding!!
@@ -99,6 +102,14 @@ class AllStudentsFragment : Fragment() {
             binding.addStudentFab.visibility = View.INVISIBLE
         }
 
+        binding.addStudentFab.setOnClickListener {
+            if (dataStoreViewModel.networkStatus) {
+                findNavController().navigate(R.id.action_allStudentsFragment_to_addStudentBottomSheet)
+            } else {
+                dataStoreViewModel.showNetworkStatus()
+            }
+        }
+
         return binding.root
     }
 
@@ -136,7 +147,7 @@ class AllStudentsFragment : Fragment() {
     private fun readDatabase() {
         lifecycleScope.launch {
             allStudentsViewModel.readStudents.observeOnce(viewLifecycleOwner) { database ->
-                if (database.isNotEmpty()) {
+                if (database.isNotEmpty() && !args.backFromBottomSheet) {
                     Log.d("AllStudentsFragment", "readDatabase called!")
 
                     val studentList = mutableListOf<Student>()

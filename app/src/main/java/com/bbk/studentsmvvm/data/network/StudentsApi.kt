@@ -1,6 +1,7 @@
 package com.bbk.studentsmvvm.data.network
 
 import com.bbk.studentsmvvm.models.Admin
+import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.models.Token
 import com.bbk.studentsmvvm.util.UserData
@@ -34,4 +35,10 @@ interface StudentsApi {
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Students>
 
+    //@POST("/StudentsAuthorize/api/students")
+    @POST("/eihab/api/students")
+    suspend fun addStudent(
+        @Body student: Student,
+        @Header("Authorization") token: String = "Bearer " + UserData.token
+    ): Response<Student>
 }

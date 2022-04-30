@@ -18,6 +18,13 @@
         <action
             android:id="@+id/action_allStudentsFragment_to_studentDetailsFragment"
             app:destination="@id/studentDetailsFragment" />
+        <action
+            android:id="@+id/action_allStudentsFragment_to_addStudentBottomSheet"
+            app:destination="@id/addStudentBottomSheet" />
+        <argument
+            android:name="backFromBottomSheet"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -55,4 +62,15 @@
             android:name="student"
             app:argType="com.bbk.studentsmvvm.models.Student" />
     </fragment>
+    <dialog
+        android:id="@+id/addStudentBottomSheet"
+        android:name="com.bbk.studentsmvvm.ui.fragments.AddStudentBottomSheet"
+        android:label="add_student_bottom_sheet"
+        tools:layout="@layout/add_student_bottom_sheet" >
+        <action
+            android:id="@+id/action_addStudentBottomSheet_to_allStudentsFragment"
+            app:destination="@id/allStudentsFragment"
+            app:popUpTo="@id/allStudentsFragment"
+            app:popUpToInclusive="true" />
+    </dialog>
 </navigation>
