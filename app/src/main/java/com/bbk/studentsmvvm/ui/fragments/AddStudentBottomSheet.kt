@@ -13,12 +13,14 @@ import com.bbk.studentsmvvm.databinding.AddStudentBottomSheetBinding
 import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
-import com.bbk.studentsmvvm.util.UserData
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class AddStudentBottomSheet : BottomSheetDialogFragment() {
 
     private var _binding: AddStudentBottomSheetBinding? = null
@@ -93,7 +95,7 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
             } catch (e: Exception) {
                 Toast.makeText(
                     requireContext(),
-                    e.message,
+                    "Invalid input",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
@@ -102,9 +104,7 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
             if (dataStoreViewModel.networkStatus) {
                 showLoading()
 
-                lifecycleScope.launch {
-                    addStudent(student)
-                }
+                addStudent(student)
             } else {
                 hideLoading()
 
@@ -125,6 +125,13 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
         allStudentsViewModel.addStudentResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Added student ${response.data?.firstName} successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToAllStudentsFragment(true)
                     findNavController().navigate(action)
                 }
