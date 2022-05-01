@@ -159,7 +159,7 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToStudentDetailsFragment(response.data!!, true)
+                    val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToStudentDetailsFragment(response.data!!, "update")
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {

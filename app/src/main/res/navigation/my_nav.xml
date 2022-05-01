@@ -58,19 +58,22 @@
         tools:layout="@layout/fragment_student_details">
         <argument
             android:name="student"
-            app:argType="com.bbk.studentsmvvm.models.Student" />
+            app:argType="com.bbk.studentsmvvm.models.Student"
+            app:nullable="true" />
         <action
             android:id="@+id/action_studentDetailsFragment_to_addStudentBottomSheet"
             app:destination="@id/addStudentBottomSheet" />
         <argument
-            android:name="invalidate"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:name="origin"
+            app:argType="string" />
         <action
             android:id="@+id/action_studentDetailsFragment_to_allStudentsFragment"
             app:destination="@id/allStudentsFragment"
             app:popUpTo="@id/allStudentsFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_studentDetailsFragment_to_deleteStudentBottomSheet"
+            app:destination="@id/deleteStudentBottomSheet" />
     </fragment>
     <dialog
         android:id="@+id/addStudentBottomSheet"
@@ -88,6 +91,20 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_addStudentBottomSheet_to_studentDetailsFragment"
+            app:destination="@id/studentDetailsFragment"
+            app:popUpTo="@id/studentDetailsFragment"
+            app:popUpToInclusive="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/deleteStudentBottomSheet"
+        android:name="com.bbk.studentsmvvm.ui.fragments.DeleteStudentBottomSheet"
+        android:label="delete_student_bottom_sheet"
+        tools:layout="@layout/delete_student_bottom_sheet" >
+        <argument
+            android:name="student"
+            app:argType="com.bbk.studentsmvvm.models.Student" />
+        <action
+            android:id="@+id/action_deleteStudentBottomSheet_to_studentDetailsFragment"
             app:destination="@id/studentDetailsFragment"
             app:popUpTo="@id/studentDetailsFragment"
             app:popUpToInclusive="true" />

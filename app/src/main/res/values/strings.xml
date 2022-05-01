@@ -20,4 +20,7 @@
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="delete_student">Delete Student</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

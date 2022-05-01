@@ -170,7 +170,7 @@ class AllStudentsFragment : Fragment() {
     private fun requestApiData() {
         Log.d("AllStudentsFragment", "requestApiData called!")
         if (dataStoreViewModel.networkStatus) {
-            allStudentsViewModel.deleteAllStudents()
+            allStudentsViewModel.deleteAllStudentsFromDatabase()
             allStudentsViewModel.getAllStudents()
             allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
                 when (response) {

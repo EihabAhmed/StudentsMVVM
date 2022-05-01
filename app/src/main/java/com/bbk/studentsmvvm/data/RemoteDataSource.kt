@@ -31,4 +31,8 @@ class RemoteDataSource @Inject constructor(
     suspend fun updateStudent(student: Student): Response<Student> {
         return studentsApi.updateStudent(student.id, student)
     }
+
+    suspend fun deleteStudent(id: Int): Response<Unit> {
+        return studentsApi.deleteStudent(id)
+    }
 }

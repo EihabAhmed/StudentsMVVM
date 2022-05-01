@@ -16,6 +16,7 @@ import com.bbk.studentsmvvm.R
 import com.bbk.studentsmvvm.databinding.FragmentStudentDetailsBinding
 import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.util.NetworkListener
+import com.bbk.studentsmvvm.util.UserData
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,7 @@ class StudentDetailsFragment : Fragment() {
 
     private lateinit var networkListener: NetworkListener
 
-    private lateinit var student: Student
+    private var student: Student? = null
 
     private var firstStart = true
 
@@ -71,16 +72,23 @@ class StudentDetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentStudentDetailsBinding.inflate(inflater, container, false)
 
-        setHasOptionsMenu(true)
+        if (args.origin == "delete") {
+            val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(true)
+            findNavController().navigate(action)
+        }
+
+        if (UserData.isAdmin) {
+            setHasOptionsMenu(true)
+        }
 
         student = args.student
 
-        binding.mainImageView.load(student.imageUrl) {
+        binding.mainImageView.load(student!!.imageUrl) {
             error(R.drawable.ic_placeholder)
         }
-        binding.nameTextView.text = student.firstName
-        binding.ageTextView.text = "${student.age} years old"
-        binding.gradeTextView.text = "Grade ${student.grade}"
+        binding.nameTextView.text = student!!.firstName
+        binding.ageTextView.text = "${student!!.age} years old"
+        binding.gradeTextView.text = "Grade ${student!!.grade}"
 
         return binding.root
     }
@@ -105,7 +113,7 @@ class StudentDetailsFragment : Fragment() {
                 val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAddStudentBottomSheet(student)
                 findNavController().navigate(action)
             } catch (e: Exception) {
-                Log.d("onStudentClickListener", e.toString())
+                Log.d("editStudent", e.toString())
             }
         } else {
             dataStoreViewModel.showNetworkStatus()
@@ -113,10 +121,17 @@ class StudentDetailsFragment : Fragment() {
     }
 
     private fun deleteStudent() {
-
+        if (dataStoreViewModel.networkStatus) {
+            try {
+                val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToDeleteStudentBottomSheet(student!!)
+                findNavController().navigate(action)
+            } catch (e: Exception) {
+                Log.d("deleteStudent", e.toString())
+            }
+        } else {
+            dataStoreViewModel.showNetworkStatus()
+        }
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

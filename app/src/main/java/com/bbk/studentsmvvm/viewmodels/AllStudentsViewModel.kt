@@ -25,17 +25,17 @@ class AllStudentsViewModel @Inject constructor(
     /** ROOM DATABASE */
     val readStudents: LiveData<List<StudentEntity>> = repository.local.readStudents().asLiveData()
 
-    private fun insertStudent(studentEntity: StudentEntity) =
+    private fun insertStudentIntoDatabase(studentEntity: StudentEntity) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.insertStudent(studentEntity)
         }
 
-    fun deleteStudent(studentEntity: StudentEntity) =
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.local.deleteStudent(studentEntity)
-        }
+//    fun deleteStudent(studentEntity: StudentEntity) =
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.local.deleteStudent(studentEntity)
+//        }
 
-    fun deleteAllStudents() =
+    fun deleteAllStudentsFromDatabase() =
         viewModelScope.launch(Dispatchers.IO) {
             repository.local.deleteAllStudents()
         }
@@ -44,6 +44,7 @@ class AllStudentsViewModel @Inject constructor(
     var allStudentsResponse: MutableLiveData<NetworkResult<Students>> = MutableLiveData()
     var addStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
     var updateStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
+    var deleteStudentResponse: MutableLiveData<NetworkResult<String>> = MutableLiveData()
 
     fun getAllStudents() = viewModelScope.launch {
         getAllStudentsSafeCall()
@@ -55,6 +56,10 @@ class AllStudentsViewModel @Inject constructor(
 
     fun updateStudent(student: Student) = viewModelScope.launch {
         updateStudentSafeCall(student)
+    }
+
+    fun deleteStudent(id: Int) = viewModelScope.launch {
+        deleteStudentSafeCall(id)
     }
 
     private suspend fun getAllStudentsSafeCall() {
@@ -104,10 +109,24 @@ class AllStudentsViewModel @Inject constructor(
         }
     }
 
+    private suspend fun deleteStudentSafeCall(id: Int) {
+        deleteStudentResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.deleteStudent(id)
+                deleteStudentResponse.value = handleDeleteStudentResponse(response)
+            } catch (e: Exception) {
+                deleteStudentResponse.value = NetworkResult.Error("Error deleting student")
+            }
+        } else {
+            deleteStudentResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
     private fun offlineCacheStudents(students: Students) {
         for (student in students.students) {
             val studentEntity = StudentEntity(student)
-            insertStudent(studentEntity)
+            insertStudentIntoDatabase(studentEntity)
         }
 
     }
@@ -168,6 +187,23 @@ class AllStudentsViewModel @Inject constructor(
             response.isSuccessful -> {
                 val student = response.body()
                 return NetworkResult.Success(student!!)
+            }
+            else -> {
+                return NetworkResult.Error(response.message())
+            }
+        }
+    }
+
+    private fun handleDeleteStudentResponse(response: Response<Unit>): NetworkResult<String> {
+        when {
+            response.message().toString().contains("timeout") -> {
+                return NetworkResult.Error("Timeout")
+            }
+            response.code() == 402 -> {
+                return NetworkResult.Error("API Key Limited.")
+            }
+            response.isSuccessful -> {
+                return NetworkResult.Success("")
             }
             else -> {
                 return NetworkResult.Error(response.message())
