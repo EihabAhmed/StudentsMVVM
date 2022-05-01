@@ -104,7 +104,8 @@ class AllStudentsFragment : Fragment() {
 
         binding.addStudentFab.setOnClickListener {
             if (dataStoreViewModel.networkStatus) {
-                findNavController().navigate(R.id.action_allStudentsFragment_to_addStudentBottomSheet)
+                val action = AllStudentsFragmentDirections.actionAllStudentsFragmentToAddStudentBottomSheet(null)
+                findNavController().navigate(action)
             } else {
                 dataStoreViewModel.showNetworkStatus()
             }
@@ -147,7 +148,7 @@ class AllStudentsFragment : Fragment() {
     private fun readDatabase() {
         lifecycleScope.launch {
             allStudentsViewModel.readStudents.observeOnce(viewLifecycleOwner) { database ->
-                if (database.isNotEmpty() && !args.backFromBottomSheet) {
+                if (database.isNotEmpty() && !args.invalidate) {
                     Log.d("AllStudentsFragment", "readDatabase called!")
 
                     val studentList = mutableListOf<Student>()

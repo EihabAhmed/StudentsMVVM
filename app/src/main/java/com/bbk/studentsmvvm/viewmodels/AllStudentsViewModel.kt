@@ -43,6 +43,7 @@ class AllStudentsViewModel @Inject constructor(
     /** RETROFIT */
     var allStudentsResponse: MutableLiveData<NetworkResult<Students>> = MutableLiveData()
     var addStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
+    var updateStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
 
     fun getAllStudents() = viewModelScope.launch {
         getAllStudentsSafeCall()
@@ -50,6 +51,10 @@ class AllStudentsViewModel @Inject constructor(
 
     fun addStudent(student: Student) = viewModelScope.launch {
         addStudentSafeCall(student)
+    }
+
+    fun updateStudent(student: Student) = viewModelScope.launch {
+        updateStudentSafeCall(student)
     }
 
     private suspend fun getAllStudentsSafeCall() {
@@ -82,6 +87,20 @@ class AllStudentsViewModel @Inject constructor(
             }
         } else {
             addStudentResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun updateStudentSafeCall(student: Student) {
+        updateStudentResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.updateStudent(student)
+                updateStudentResponse.value = handleUpdateStudentResponse(response)
+            } catch (e: Exception) {
+                updateStudentResponse.value = NetworkResult.Error("Error updating student")
+            }
+        } else {
+            updateStudentResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 
@@ -124,6 +143,27 @@ class AllStudentsViewModel @Inject constructor(
             }
             response.body()!!.firstName.isNullOrBlank() -> {
                 return NetworkResult.Error("Error adding student")
+            }
+            response.isSuccessful -> {
+                val student = response.body()
+                return NetworkResult.Success(student!!)
+            }
+            else -> {
+                return NetworkResult.Error(response.message())
+            }
+        }
+    }
+
+    private fun handleUpdateStudentResponse(response: Response<Student>): NetworkResult<Student> {
+        when {
+            response.message().toString().contains("timeout") -> {
+                return NetworkResult.Error("Timeout")
+            }
+            response.code() == 402 -> {
+                return NetworkResult.Error("API Key Limited.")
+            }
+            response.body()!!.firstName.isNullOrBlank() -> {
+                return NetworkResult.Error("Error updating student")
             }
             response.isSuccessful -> {
                 val student = response.body()

@@ -18,4 +18,6 @@
     <string name="grade">Grade</string>
     <string name="image_url">Image URL</string>
     <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

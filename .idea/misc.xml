@@ -8,6 +8,8 @@
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_add.xml" value="0.234" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_da5ee03c59b6f8e52d7e5bcd2db6aa35_2_.xml" value="0.1815" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_da5ee03c59b6f8e52d7e5bcd2db6aa35_3_.xml" value="0.1815" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_delete.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_edit.xml" value="0.1815" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_error_placeholder.xml" value="0.218" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_logout.xml" value="0.1815" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/drawable/ic_placeholder.xml" value="0.234" />
@@ -25,6 +27,7 @@
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/layout/student_row_layout.xml" value="0.4899536321483771" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/menu/all_students_menu.xml" value="0.259375" />
         <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/menu/reload_menu.xml" value="0.259375" />
+        <entry key="..\:/AndroidStudioProjects/StudentsMVVM/app/src/main/res/menu/student_details_menu.xml" value="0.259375" />
       </map>
     </option>
   </component>
