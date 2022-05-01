@@ -39,7 +39,8 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel =
+            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {
@@ -62,7 +63,8 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
 
         student = args.student
 
-        binding.deleteMessageTv.text = "Are you sure you want to delete student ${student.firstName}?"
+        binding.deleteMessageTv.text =
+            "Are you sure you want to delete student ${student.firstName}?"
 
         binding.btnYesDelete.setOnClickListener {
 
@@ -82,7 +84,11 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.btnNoDelete.setOnClickListener {
-            val action = DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(student, "")
+            val action =
+                DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(
+                    student,
+                    ""
+                )
             findNavController().navigate(action)
         }
 
@@ -102,7 +108,11 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    val action = DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(student, "delete")
+                    val action =
+                        DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(
+                            student,
+                            "delete"
+                        )
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {

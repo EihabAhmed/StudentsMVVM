@@ -1,6 +1,9 @@
 package com.bbk.studentsmvvm.data.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 import com.bbk.studentsmvvm.data.database.entities.StudentEntity
 import kotlinx.coroutines.flow.Flow
 

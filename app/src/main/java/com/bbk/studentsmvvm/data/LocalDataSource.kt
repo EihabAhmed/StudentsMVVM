@@ -17,9 +17,9 @@ class LocalDataSource @Inject constructor(
         studentsDao.insertStudent(studentEntity)
     }
 
-    suspend fun deleteStudent(studentEntity: StudentEntity) {
-        studentsDao.deleteStudent(studentEntity)
-    }
+//    suspend fun deleteStudent(studentEntity: StudentEntity) {
+//        studentsDao.deleteStudent(studentEntity)
+//    }
 
     suspend fun deleteAllStudents() {
         studentsDao.deleteAllStudents()

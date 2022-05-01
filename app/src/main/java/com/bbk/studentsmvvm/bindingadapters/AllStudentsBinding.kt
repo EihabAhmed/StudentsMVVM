@@ -8,7 +8,6 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkResult
-import com.bbk.studentsmvvm.util.UserData
 
 class AllStudentsBinding {
 

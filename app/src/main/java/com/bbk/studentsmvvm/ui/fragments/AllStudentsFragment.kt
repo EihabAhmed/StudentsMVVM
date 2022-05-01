@@ -19,8 +19,8 @@ import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
 import com.bbk.studentsmvvm.util.UserData
 import com.bbk.studentsmvvm.util.observeOnce
-import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
+import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -45,7 +45,8 @@ class AllStudentsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel =
+            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel =
             ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
@@ -104,7 +105,10 @@ class AllStudentsFragment : Fragment() {
 
         binding.addStudentFab.setOnClickListener {
             if (dataStoreViewModel.networkStatus) {
-                val action = AllStudentsFragmentDirections.actionAllStudentsFragmentToAddStudentBottomSheet(null)
+                val action =
+                    AllStudentsFragmentDirections.actionAllStudentsFragmentToAddStudentBottomSheet(
+                        null
+                    )
                 findNavController().navigate(action)
             } else {
                 dataStoreViewModel.showNetworkStatus()

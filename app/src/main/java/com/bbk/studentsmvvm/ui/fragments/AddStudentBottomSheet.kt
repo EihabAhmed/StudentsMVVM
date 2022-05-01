@@ -40,7 +40,8 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel =
+            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {
@@ -159,7 +160,11 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToStudentDetailsFragment(response.data!!, "update")
+                    val action =
+                        AddStudentBottomSheetDirections.actionAddStudentBottomSheetToStudentDetailsFragment(
+                            response.data!!,
+                            "update"
+                        )
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
@@ -190,7 +195,10 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    val action = AddStudentBottomSheetDirections.actionAddStudentBottomSheetToAllStudentsFragment(true)
+                    val action =
+                        AddStudentBottomSheetDirections.actionAddStudentBottomSheetToAllStudentsFragment(
+                            true
+                        )
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {

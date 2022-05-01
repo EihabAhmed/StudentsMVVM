@@ -20,7 +20,11 @@ class StudentRowBinding {
         fun onStudentClickListener(studentRowLayout: ConstraintLayout, student: Student) {
             studentRowLayout.setOnClickListener {
                 try {
-                    val action = AllStudentsFragmentDirections.actionAllStudentsFragmentToStudentDetailsFragment(student, "")
+                    val action =
+                        AllStudentsFragmentDirections.actionAllStudentsFragmentToStudentDetailsFragment(
+                            student,
+                            ""
+                        )
                     studentRowLayout.findNavController().navigate(action)
                 } catch (e: Exception) {
                     Log.d("onStudentClickListener", e.toString())

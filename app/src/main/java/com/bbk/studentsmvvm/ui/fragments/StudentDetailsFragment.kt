@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -21,7 +19,6 @@ import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.jsoup.Jsoup
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -39,12 +36,11 @@ class StudentDetailsFragment : Fragment() {
 
     private var student: Student? = null
 
-    private var firstStart = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel =
+            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {
@@ -59,7 +55,10 @@ class StudentDetailsFragment : Fragment() {
 
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(true)
+                val action =
+                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(
+                        true
+                    )
                 findNavController().navigate(action)
             }
         })
@@ -73,7 +72,10 @@ class StudentDetailsFragment : Fragment() {
         _binding = FragmentStudentDetailsBinding.inflate(inflater, container, false)
 
         if (args.origin == "delete") {
-            val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(true)
+            val action =
+                StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(
+                    true
+                )
             findNavController().navigate(action)
         }
 
@@ -110,7 +112,10 @@ class StudentDetailsFragment : Fragment() {
     private fun editStudent() {
         if (dataStoreViewModel.networkStatus) {
             try {
-                val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAddStudentBottomSheet(student)
+                val action =
+                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAddStudentBottomSheet(
+                        student
+                    )
                 findNavController().navigate(action)
             } catch (e: Exception) {
                 Log.d("editStudent", e.toString())
@@ -123,7 +128,10 @@ class StudentDetailsFragment : Fragment() {
     private fun deleteStudent() {
         if (dataStoreViewModel.networkStatus) {
             try {
-                val action = StudentDetailsFragmentDirections.actionStudentDetailsFragmentToDeleteStudentBottomSheet(student!!)
+                val action =
+                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToDeleteStudentBottomSheet(
+                        student!!
+                    )
                 findNavController().navigate(action)
             } catch (e: Exception) {
                 Log.d("deleteStudent", e.toString())
