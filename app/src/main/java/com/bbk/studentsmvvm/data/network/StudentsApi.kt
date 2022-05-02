@@ -56,4 +56,10 @@ interface StudentsApi {
         @Query("id") id: Int,
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Unit>
+
+    @DELETE("/StudentsAuthorize/api/students/DeleteAllStudents")
+    //@DELETE("/eihab/api/students/DeleteAllStudents")
+    suspend fun deleteAllStudents(
+        @Header("Authorization") token: String = "Bearer " + UserData.token
+    ): Response<Unit>
 }

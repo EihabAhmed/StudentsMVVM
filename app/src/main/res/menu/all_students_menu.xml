@@ -8,7 +8,15 @@
         android:icon="@drawable/ic_reload"
         android:iconTint="@color/white"
         android:title="@string/reload"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
+        tools:targetApi="o" />
+
+    <item
+        android:id="@+id/menu_delete_all"
+        android:icon="@drawable/ic_delete"
+        android:iconTint="@color/white"
+        android:title="@string/delete_all"
+        app:showAsAction="never"
         tools:targetApi="o" />
 
     <item
@@ -16,7 +24,7 @@
         android:icon="@drawable/ic_logout"
         android:iconTint="@color/white"
         android:title="@string/logout"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         tools:targetApi="o" />
 
 </menu>

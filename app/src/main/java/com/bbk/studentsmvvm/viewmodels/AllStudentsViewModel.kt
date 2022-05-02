@@ -44,7 +44,7 @@ class AllStudentsViewModel @Inject constructor(
     var allStudentsResponse: MutableLiveData<NetworkResult<Students>> = MutableLiveData()
     var addStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
     var updateStudentResponse: MutableLiveData<NetworkResult<Student>> = MutableLiveData()
-    var deleteStudentResponse: MutableLiveData<NetworkResult<String>> = MutableLiveData()
+    var deleteStudentsResponse: MutableLiveData<NetworkResult<String>> = MutableLiveData()
 
     fun getAllStudents() = viewModelScope.launch {
         getAllStudentsSafeCall()
@@ -60,6 +60,10 @@ class AllStudentsViewModel @Inject constructor(
 
     fun deleteStudent(id: Int) = viewModelScope.launch {
         deleteStudentSafeCall(id)
+    }
+
+    fun deleteAllStudents() = viewModelScope.launch {
+        deleteAllStudentsSafeCall()
     }
 
     private suspend fun getAllStudentsSafeCall() {
@@ -110,16 +114,30 @@ class AllStudentsViewModel @Inject constructor(
     }
 
     private suspend fun deleteStudentSafeCall(id: Int) {
-        deleteStudentResponse.value = NetworkResult.Loading()
+        deleteStudentsResponse.value = NetworkResult.Loading()
         if (hasInternetConnection()) {
             try {
                 val response = repository.remote.deleteStudent(id)
-                deleteStudentResponse.value = handleDeleteStudentResponse(response)
+                deleteStudentsResponse.value = handleDeleteStudentResponse(response)
             } catch (e: Exception) {
-                deleteStudentResponse.value = NetworkResult.Error("Error deleting student")
+                deleteStudentsResponse.value = NetworkResult.Error("Error deleting student")
             }
         } else {
-            deleteStudentResponse.value = NetworkResult.Error("No Internet Connection.")
+            deleteStudentsResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun deleteAllStudentsSafeCall() {
+        deleteStudentsResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.deleteAllStudents()
+                deleteStudentsResponse.value = handleDeleteStudentResponse(response)
+            } catch (e: Exception) {
+                deleteStudentsResponse.value = NetworkResult.Error("Error deleting students")
+            }
+        } else {
+            deleteStudentsResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 

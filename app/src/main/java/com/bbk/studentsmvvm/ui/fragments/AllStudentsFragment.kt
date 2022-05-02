@@ -133,9 +133,41 @@ class AllStudentsFragment : Fragment() {
             requestApiData()
         } else if (item.itemId == R.id.menu_logout) {
             logout()
+        } else if (item.itemId == R.id.menu_delete_all) {
+            deleteAllStudents()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteAllStudents() {
+
+        if (!UserData.isAdmin) {
+            Toast.makeText(
+                requireContext(),
+                "Only admins can delete students",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (binding.recyclerview.adapter!!.itemCount == 0) {
+            Toast.makeText(
+                requireContext(),
+                "No students found",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (dataStoreViewModel.networkStatus) {
+            try {
+                val action =
+                    AllStudentsFragmentDirections.actionAllStudentsFragmentToDeleteStudentBottomSheet(
+                        null,
+                        "all students"
+                    )
+                findNavController().navigate(action)
+            } catch (e: Exception) {
+                Log.d("deleteAllStudents", e.toString())
+            }
+        } else {
+            dataStoreViewModel.showNetworkStatus()
+        }
     }
 
     private fun logout() {

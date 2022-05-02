@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bbk.studentsmvvm.databinding.DeleteStudentBottomSheetBinding
@@ -17,6 +18,7 @@ import com.bbk.studentsmvvm.util.NetworkResult
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -34,7 +36,7 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var networkListener: NetworkListener
 
-    private lateinit var student: Student
+    private var student: Student? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,15 +65,23 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
 
         student = args.student
 
-        binding.deleteMessageTv.text =
-            "Are you sure you want to delete student ${student.firstName}?"
+        if (args.origin == "student details") {
+            binding.deleteMessageTv.text =
+                "Are you sure you want to delete student ${student!!.firstName}?"
+        } else if (args.origin == "all students") {
+            binding.deleteMessageTv.text = "Are you sure you want to delete selected students?"
+        }
 
         binding.btnYesDelete.setOnClickListener {
 
             if (dataStoreViewModel.networkStatus) {
                 showLoading()
 
-                deleteStudent()
+                if (args.origin == "student details") {
+                    deleteStudent()
+                } else if (args.origin == "all students") {
+                    deleteAllStudents()
+                }
             } else {
                 hideLoading()
 
@@ -84,12 +94,21 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.btnNoDelete.setOnClickListener {
-            val action =
-                DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(
-                    student,
-                    ""
-                )
-            findNavController().navigate(action)
+
+            var action: NavDirections? = null
+
+            if (args.origin == "student details") {
+                action =
+                    DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(
+                        student,
+                        ""
+                    )
+            } else if (args.origin == "all students") {
+                action =
+                    DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToAllStudentsFragment()
+            }
+
+            findNavController().navigate(action!!)
         }
 
         return binding.root
@@ -97,14 +116,14 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
 
     private fun deleteStudent() {
         Log.d("DeleteStudentBottomSheet", "deleteStudent called!")
-        allStudentsViewModel.deleteStudent(student.id)
-        allStudentsViewModel.deleteStudentResponse.observe(viewLifecycleOwner) { response ->
+        allStudentsViewModel.deleteStudent(student!!.id)
+        allStudentsViewModel.deleteStudentsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
 
                     Toast.makeText(
                         requireContext(),
-                        "Deleted student ${student.firstName} successfully",
+                        "Deleted student ${student!!.firstName} successfully",
                         Toast.LENGTH_SHORT
                     ).show()
 
@@ -112,6 +131,41 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
                         DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToStudentDetailsFragment(
                             student,
                             "delete"
+                        )
+                    findNavController().navigate(action)
+                }
+                is NetworkResult.Error -> {
+                    hideLoading()
+                    Toast.makeText(
+                        requireContext(),
+                        response.message.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is NetworkResult.Loading -> {
+                    showLoading()
+                }
+            }
+        }
+    }
+
+    private fun deleteAllStudents() {
+        Log.d("DeleteStudentBottomSheet", "deleteAllStudents called!")
+        allStudentsViewModel.deleteAllStudents()
+        allStudentsViewModel.deleteStudentsResponse.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is NetworkResult.Success -> {
+
+                    Snackbar.make(
+                        binding.root,
+                        "Deleted students successfully",
+                        Snackbar.LENGTH_SHORT
+                    ).setAction("Okay") {}
+                        .show()
+
+                    val action =
+                        DeleteStudentBottomSheetDirections.actionDeleteStudentBottomSheetToAllStudentsFragment(
+                            true
                         )
                     findNavController().navigate(action)
                 }

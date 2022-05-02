@@ -130,7 +130,8 @@ class StudentDetailsFragment : Fragment() {
             try {
                 val action =
                     StudentDetailsFragmentDirections.actionStudentDetailsFragmentToDeleteStudentBottomSheet(
-                        student!!
+                        student!!,
+                        "student details"
                     )
                 findNavController().navigate(action)
             } catch (e: Exception) {
