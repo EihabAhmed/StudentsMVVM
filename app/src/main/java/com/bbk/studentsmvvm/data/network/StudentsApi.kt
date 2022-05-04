@@ -1,17 +1,18 @@
 package com.bbk.studentsmvvm.data.network
 
-import com.bbk.studentsmvvm.models.Admin
-import com.bbk.studentsmvvm.models.Student
-import com.bbk.studentsmvvm.models.Students
-import com.bbk.studentsmvvm.models.Token
+import com.bbk.studentsmvvm.models.*
+import com.bbk.studentsmvvm.util.Constants.Companion.SUB_DOMAIN
 import com.bbk.studentsmvvm.util.UserData
 import retrofit2.Response
 import retrofit2.http.*
 
 interface StudentsApi {
 
-    @GET("/StudentsAuthorize/api/IsAdmin")
+
+
+    //@GET("/StudentsAuthorize/api/IsAdmin")
     //@GET("/eihab/api/IsAdmin")
+    @GET("$SUB_DOMAIN/api/IsAdmin")
     suspend fun isAdmin(
         @Query("username") username: String,
         @Header("Accept") accept: String = "application/json",
@@ -19,8 +20,9 @@ interface StudentsApi {
     ): Response<Admin>
 
     @FormUrlEncoded
-    @POST("/StudentsAuthorize/token")
+    //@POST("/StudentsAuthorize/token")
     //@POST("/eihab/token")
+    @POST("$SUB_DOMAIN/token")
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String,
@@ -29,36 +31,48 @@ interface StudentsApi {
         @Header("Accept") accept: String = "application/json"
     ): Response<Token>
 
-    @GET("/StudentsAuthorize/api/students")
+    //@POST("/StudentsAuthorize/api/account/register")
+    //@POST("/eihab/api/account/register")
+    @POST("$SUB_DOMAIN/api/account/register")
+    suspend fun register(
+        @Body registerModel: RegisterModel
+    ): Response<Unit>
+
+    //@GET("/StudentsAuthorize/api/students")
     //@GET("/eihab/api/students")
+    @GET("$SUB_DOMAIN/api/students")
     suspend fun getAllStudents(
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Students>
 
-    @POST("/StudentsAuthorize/api/students")
+    //@POST("/StudentsAuthorize/api/students")
     //@POST("/eihab/api/students")
+    @POST("$SUB_DOMAIN/api/students")
     suspend fun addStudent(
         @Body student: Student,
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Student>
 
-    @PUT("/StudentsAuthorize/api/students")
+    //@PUT("/StudentsAuthorize/api/students")
     //@PUT("/eihab/api/students")
+    @PUT("$SUB_DOMAIN/api/students")
     suspend fun updateStudent(
         @Query("id") id: Int,
         @Body student: Student,
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Student>
 
-    @DELETE("/StudentsAuthorize/api/students")
+    //@DELETE("/StudentsAuthorize/api/students")
     //@DELETE("/eihab/api/students")
+    @DELETE("$SUB_DOMAIN/api/students")
     suspend fun deleteStudent(
         @Query("id") id: Int,
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Unit>
 
-    @DELETE("/StudentsAuthorize/api/students/DeleteAllStudents")
+    //@DELETE("/StudentsAuthorize/api/students/DeleteAllStudents")
     //@DELETE("/eihab/api/students/DeleteAllStudents")
+    @DELETE("$SUB_DOMAIN/api/students/DeleteAllStudents")
     suspend fun deleteAllStudents(
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Unit>

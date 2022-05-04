@@ -12,7 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bbk.studentsmvvm.R
-import com.bbk.studentsmvvm.databinding.FragmentLoginBinding
+import com.bbk.studentsmvvm.databinding.FragmentRegisterBinding
+import com.bbk.studentsmvvm.models.RegisterModel
 import com.bbk.studentsmvvm.util.NetworkListener
 import com.bbk.studentsmvvm.util.NetworkResult
 import com.bbk.studentsmvvm.util.UserData
@@ -23,9 +24,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class RegisterFragment : Fragment() {
 
-    private var _binding: FragmentLoginBinding? = null
+    private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var loginViewModel: LoginViewModel
@@ -55,14 +56,14 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.loginViewModel = loginViewModel
 
-        binding.loginButton.setOnClickListener {
+        binding.registerButton.setOnClickListener {
 
-            val userName = binding.loginEmailEditText.text.toString()
-            val password = binding.loginPasswordEditText.text.toString()
+            val userName = binding.registerEmailEditText.text.toString()
+            val password = binding.registerPasswordEditText.text.toString()
+            val confirmPassword = binding.confirmPasswordEditText.text.toString()
 
             if (userName.isBlank()) {
                 Toast.makeText(
@@ -82,11 +83,28 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            if (password.length < 6) {
+                Toast.makeText(
+                    requireContext(),
+                    "Password must be at least 6 characters",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (password != confirmPassword) {
+                Toast.makeText(
+                    requireContext(),
+                    "Password and Confirm Password must be identical",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             if (dataStoreViewModel.networkStatus) {
                 //showLoading()
 
-                login(userName, password)
-
+                register(RegisterModel(userName, password, confirmPassword))
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -96,15 +114,39 @@ class LoginFragment : Fragment() {
             }
         }
 
-        binding.loginCreateoneTextView.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
-        }
-
         return binding.root
     }
 
+    private fun register(registerModel: RegisterModel) {
+        Log.d("RegisterFragment", "register called!")
+        loginViewModel.register(registerModel)
+        loginViewModel.registerResponse.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is NetworkResult.Success -> {
+
+                    loginViewModel.registerResponse.removeObservers(viewLifecycleOwner)
+
+                    login(registerModel.email, registerModel.password)
+                }
+                is NetworkResult.Error -> {
+                    loginViewModel.registerResponse.removeObservers(viewLifecycleOwner)
+
+                    hideLoading()
+                    Toast.makeText(
+                        requireContext(),
+                        response.message.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is NetworkResult.Loading -> {
+                    showLoading()
+                }
+            }
+        }
+    }
+
     private fun login(userName: String, password: String) {
-        Log.d("LoginFragment", "login called!")
+        Log.d("RegisterFragment", "login called!")
         loginViewModel.login(userName, password)
         loginViewModel.loginResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
@@ -118,7 +160,6 @@ class LoginFragment : Fragment() {
                     dataStoreViewModel.saveUserName(UserData.userName)
 
                     requestIsAdmin()
-
                 }
                 is NetworkResult.Error -> {
                     loginViewModel.loginResponse.removeObservers(viewLifecycleOwner)
@@ -138,7 +179,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun requestIsAdmin() {
-        Log.d("LoginFragment", "requestIsAdmin called!")
+        Log.d("RegisterFragment", "requestIsAdmin called!")
+        loginViewModel.isAdminResponse.value = NetworkResult.Loading()
         loginViewModel.checkAdmin(UserData.userName)
         loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
@@ -146,7 +188,7 @@ class LoginFragment : Fragment() {
                     loginViewModel.isAdminResponse.removeObservers(viewLifecycleOwner)
 
                     UserData.isAdmin = response.data?.admin ?: false
-                    findNavController().navigate(R.id.action_loginFragment_to_allStudentsFragment)
+                    findNavController().navigate(R.id.action_registerFragment_to_allStudentsFragment)
                 }
                 is NetworkResult.Error -> {
                     loginViewModel.isAdminResponse.removeObservers(viewLifecycleOwner)
@@ -166,19 +208,19 @@ class LoginFragment : Fragment() {
     }
 
     private fun showLoading() {
-        binding.loginEmailEditText.isEnabled = false
-        binding.loginPasswordEditText.isEnabled = false
-        binding.loginButton.isEnabled = false
-        binding.loginCreateoneTextView.isEnabled = false
-        binding.loginLoading.visibility = View.VISIBLE
+        binding.registerEmailEditText.isEnabled = false
+        binding.registerPasswordEditText.isEnabled = false
+        binding.confirmPasswordEditText.isEnabled = false
+        binding.registerButton.isEnabled = false
+        binding.registerLoading.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        binding.loginEmailEditText.isEnabled = true
-        binding.loginPasswordEditText.isEnabled = true
-        binding.loginButton.isEnabled = true
-        binding.loginCreateoneTextView.isEnabled = true
-        binding.loginLoading.visibility = View.INVISIBLE
+        binding.registerEmailEditText.isEnabled = true
+        binding.registerPasswordEditText.isEnabled = true
+        binding.confirmPasswordEditText.isEnabled = true
+        binding.registerButton.isEnabled = true
+        binding.registerLoading.visibility = View.INVISIBLE
     }
 
     override fun onResume() {

@@ -38,6 +38,9 @@
             app:destination="@id/allStudentsFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <fragment
         android:id="@+id/splashFragment"
@@ -121,4 +124,12 @@
             android:name="origin"
             app:argType="string" />
     </dialog>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.bbk.studentsmvvm.ui.fragments.RegisterFragment"
+        android:label="RegisterFragment" >
+        <action
+            android:id="@+id/action_registerFragment_to_allStudentsFragment"
+            app:destination="@id/allStudentsFragment" />
+    </fragment>
 </navigation>

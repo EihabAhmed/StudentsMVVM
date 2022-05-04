@@ -1,10 +1,7 @@
 package com.bbk.studentsmvvm.data
 
 import com.bbk.studentsmvvm.data.network.StudentsApi
-import com.bbk.studentsmvvm.models.Admin
-import com.bbk.studentsmvvm.models.Student
-import com.bbk.studentsmvvm.models.Students
-import com.bbk.studentsmvvm.models.Token
+import com.bbk.studentsmvvm.models.*
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -18,6 +15,10 @@ class RemoteDataSource @Inject constructor(
 
     suspend fun login(userName: String, password: String): Response<Token> {
         return studentsApi.login(userName, password)
+    }
+
+    suspend fun register(registerModel: RegisterModel): Response<Unit> {
+        return studentsApi.register(registerModel)
     }
 
     suspend fun getAllStudents(): Response<Students> {

@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.bbk.studentsmvvm.data.Repository
 import com.bbk.studentsmvvm.models.Admin
+import com.bbk.studentsmvvm.models.RegisterModel
 import com.bbk.studentsmvvm.models.Token
 import com.bbk.studentsmvvm.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +24,20 @@ class LoginViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     /** RETROFIT */
+    var registerResponse: MutableLiveData<NetworkResult<String>> = MutableLiveData()
     var loginResponse: MutableLiveData<NetworkResult<Token>> = MutableLiveData()
     var isAdminResponse: MutableLiveData<NetworkResult<Admin>> = MutableLiveData()
 
     fun login(userName: String, password: String) = viewModelScope.launch {
         loginSafeCall(userName, password)
+    }
+
+    fun register(registerModel: RegisterModel) = viewModelScope.launch {
+        registerSafeCall(registerModel)
+    }
+
+    fun checkAdmin(userName: String) = viewModelScope.launch {
+        checkAdminSafeCall(userName)
     }
 
     private suspend fun loginSafeCall(userName: String, password: String) {
@@ -46,6 +56,34 @@ class LoginViewModel @Inject constructor(
             }
         } else {
             loginResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun registerSafeCall(registerModel: RegisterModel) {
+        registerResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.register(registerModel)
+                registerResponse.value = handleRegisterResponse(response)
+            } catch (e: Exception) {
+                registerResponse.value = NetworkResult.Error("Error Register")
+            }
+        } else {
+            registerResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun checkAdminSafeCall(userName: String) {
+        isAdminResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.isAdmin(userName)
+                isAdminResponse.value = handleIsAdminResponse(response)
+            } catch (e: Exception) {
+                isAdminResponse.value = NetworkResult.Error("No Internet Connection.")
+            }
+        } else {
+            isAdminResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 
@@ -70,21 +108,20 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun checkAdmin(userName: String) = viewModelScope.launch {
-        checkAdminSafeCall(userName)
-    }
-
-    private suspend fun checkAdminSafeCall(userName: String) {
-        isAdminResponse.value = NetworkResult.Loading()
-        if (hasInternetConnection()) {
-            try {
-                val response = repository.remote.isAdmin(userName)
-                isAdminResponse.value = handleIsAdminResponse(response)
-            } catch (e: Exception) {
-                isAdminResponse.value = NetworkResult.Error("No Internet Connection.")
+    private fun handleRegisterResponse(response: Response<Unit>): NetworkResult<String> {
+        when {
+            response.message().toString().contains("timeout") -> {
+                return NetworkResult.Error("Timeout")
             }
-        } else {
-            isAdminResponse.value = NetworkResult.Error("No Internet Connection.")
+            response.code() == 402 -> {
+                return NetworkResult.Error("API Key Limited.")
+            }
+            response.isSuccessful -> {
+                return NetworkResult.Success("OK")
+            }
+            else -> {
+                return NetworkResult.Error(response.message())
+            }
         }
     }
 

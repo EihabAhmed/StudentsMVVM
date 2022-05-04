@@ -8,7 +8,9 @@
     <string name="enter_your_email">Enter your Email</string>
     <string name="enter_password">Enter Password</string>
     <string name="don_t_have_account">Don\'t have account?</string>
+    <string name="already_have_account">Already have account?</string>
     <string name="create_one">Create one</string>
+    <string name="login_here">Login Here</string>
     <string name="splash">Splash</string>
     <string name="reload">Reload</string>
     <string name="logout">Logout</string>
@@ -24,4 +26,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="delete_all">Delete All</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm Password</string>
 </resources>
