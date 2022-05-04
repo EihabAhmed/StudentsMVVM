@@ -130,6 +130,8 @@
         android:label="RegisterFragment" >
         <action
             android:id="@+id/action_registerFragment_to_allStudentsFragment"
-            app:destination="@id/allStudentsFragment" />
+            app:destination="@id/allStudentsFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
