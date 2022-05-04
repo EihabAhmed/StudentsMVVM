@@ -56,9 +56,7 @@ class StudentDetailsFragment : Fragment() {
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val action =
-                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(
-                        true
-                    )
+                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment()
                 findNavController().navigate(action)
             }
         })
