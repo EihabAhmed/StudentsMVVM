@@ -39,8 +39,7 @@ class StudentDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel =
-            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
+        allStudentsViewModel = ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
         dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {

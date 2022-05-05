@@ -211,10 +211,14 @@ class AllStudentsFragment : Fragment() {
             allStudentsViewModel.allStudentsResponse.observe(viewLifecycleOwner) { response ->
                 when (response) {
                     is NetworkResult.Success -> {
+                        allStudentsViewModel.allStudentsResponse.removeObservers(viewLifecycleOwner)
+
                         hideShimmerEffect()
                         response.data?.let { mAdapter.setData(it) }
                     }
                     is NetworkResult.Error -> {
+                        allStudentsViewModel.allStudentsResponse.removeObservers(viewLifecycleOwner)
+
                         hideShimmerEffect()
                         loadDataFromCache()
                         Toast.makeText(

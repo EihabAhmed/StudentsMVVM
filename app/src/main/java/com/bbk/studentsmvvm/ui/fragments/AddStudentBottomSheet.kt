@@ -153,6 +153,7 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
         allStudentsViewModel.updateStudentResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
+                    allStudentsViewModel.updateStudentResponse.removeObservers(viewLifecycleOwner)
 
                     Toast.makeText(
                         requireContext(),
@@ -168,6 +169,8 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
+                    allStudentsViewModel.updateStudentResponse.removeObservers(viewLifecycleOwner)
+
                     hideLoading()
                     Toast.makeText(
                         requireContext(),
@@ -188,6 +191,7 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
         allStudentsViewModel.addStudentResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
+                    allStudentsViewModel.addStudentResponse.removeObservers(viewLifecycleOwner)
 
                     Toast.makeText(
                         requireContext(),
@@ -202,6 +206,8 @@ class AddStudentBottomSheet : BottomSheetDialogFragment() {
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
+                    allStudentsViewModel.addStudentResponse.removeObservers(viewLifecycleOwner)
+
                     hideLoading()
                     Toast.makeText(
                         requireContext(),

@@ -120,6 +120,7 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
         allStudentsViewModel.deleteStudentsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
+                    allStudentsViewModel.deleteStudentsResponse.removeObservers(viewLifecycleOwner)
 
                     Toast.makeText(
                         requireContext(),
@@ -135,6 +136,8 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
+                    allStudentsViewModel.deleteStudentsResponse.removeObservers(viewLifecycleOwner)
+
                     hideLoading()
                     Toast.makeText(
                         requireContext(),
@@ -155,6 +158,7 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
         allStudentsViewModel.deleteStudentsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
+                    allStudentsViewModel.deleteStudentsResponse.removeObservers(viewLifecycleOwner)
 
                     Snackbar.make(
                         binding.root,
@@ -170,6 +174,8 @@ class DeleteStudentBottomSheet : BottomSheetDialogFragment() {
                     findNavController().navigate(action)
                 }
                 is NetworkResult.Error -> {
+                    allStudentsViewModel.deleteStudentsResponse.removeObservers(viewLifecycleOwner)
+
                     hideLoading()
                     Toast.makeText(
                         requireContext(),

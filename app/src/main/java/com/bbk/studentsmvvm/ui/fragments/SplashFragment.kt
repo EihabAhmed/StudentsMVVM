@@ -100,7 +100,6 @@ class SplashFragment : Fragment() {
                 }
             }
 
-
         }
 
         return binding.root
@@ -114,10 +113,14 @@ class SplashFragment : Fragment() {
             loginViewModel.isAdminResponse.observe(viewLifecycleOwner) { response ->
                 when (response) {
                     is NetworkResult.Success -> {
+                        loginViewModel.isAdminResponse.removeObservers(viewLifecycleOwner)
+
                         UserData.isAdmin = response.data?.admin ?: false
                         findNavController().navigate(R.id.action_splashFragment_to_allStudentsFragment)
                     }
                     is NetworkResult.Error -> {
+                        loginViewModel.isAdminResponse.removeObservers(viewLifecycleOwner)
+
                         Toast.makeText(
                             requireContext(),
                             response.message.toString(),
