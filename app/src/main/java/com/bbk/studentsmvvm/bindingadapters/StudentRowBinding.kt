@@ -15,22 +15,25 @@ class StudentRowBinding {
 
     companion object {
 
-        @BindingAdapter("onStudentClickListener")
-        @JvmStatic
-        fun onStudentClickListener(studentRowLayout: ConstraintLayout, student: Student) {
-            studentRowLayout.setOnClickListener {
-                try {
-                    val action =
-                        AllStudentsFragmentDirections.actionAllStudentsFragmentToStudentDetailsFragment(
-                            student,
-                            ""
-                        )
-                    studentRowLayout.findNavController().navigate(action)
-                } catch (e: Exception) {
-                    Log.d("onStudentClickListener", e.toString())
-                }
-            }
-        }
+//        @BindingAdapter("onStudentClickListener")
+//        @JvmStatic
+//        fun onStudentClickListener(studentRowLayout: ConstraintLayout, student: Student) {
+//            studentRowLayout.setOnClickListener {
+//                try {
+//                    val action =
+//                        AllStudentsFragmentDirections.actionAllStudentsFragmentToStudentDetailsFragment(
+//                            student,
+//                            ""
+//                        )
+//                    studentRowLayout.findNavController().navigate(action)
+//                } catch (e: Exception) {
+//                    Log.d("onStudentClickListener", e.toString())
+//                }
+//            }
+//        }
+
+//        on row layout
+//        onStudentClickListener="@{student}"
 
         @BindingAdapter("loadImageFromUrl")
         @JvmStatic

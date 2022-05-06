@@ -2,7 +2,7 @@
     <string name="app_name">StudentsMVVM</string>
 
     <string name="no_internet_connection">No Internet Connection.</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login">Login</string>
     <string name="enter_your_email">Enter your Email</string>
@@ -28,4 +28,5 @@
     <string name="delete_all">Delete All</string>
     <string name="register">Register</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="delete_selected_students">Delete Selected Students</string>
 </resources>

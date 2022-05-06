@@ -36,6 +36,8 @@ class StudentDetailsFragment : Fragment() {
 
     private var student: Student? = null
 
+    private var modified = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,9 +56,19 @@ class StudentDetailsFragment : Fragment() {
 
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val action =
-                    StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment()
-                findNavController().navigate(action)
+//                if (modified) {
+                    val action =
+                        StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(true)
+                    findNavController().navigate(action)
+//                } else {
+//
+//                    val fragmentTransaction = parentFragmentManager.beginTransaction()
+//                    fragmentTransaction.remove(this@StudentDetailsFragment)
+//                    fragmentTransaction.addToBackStack(null)
+//                    fragmentTransaction.commit()
+//                }
+
+                // TODO: handle back button press and navigation back when the student details is modified and when not modified
             }
         })
     }
@@ -68,12 +80,16 @@ class StudentDetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentStudentDetailsBinding.inflate(inflater, container, false)
 
+        modified = false
+
         if (args.origin == "delete") {
             val action =
                 StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(
                     true
                 )
             findNavController().navigate(action)
+        } else if (args.origin == "update") {
+            modified = true
         }
 
         if (UserData.isAdmin) {
@@ -127,7 +143,7 @@ class StudentDetailsFragment : Fragment() {
             try {
                 val action =
                     StudentDetailsFragmentDirections.actionStudentDetailsFragmentToDeleteStudentBottomSheet(
-                        student!!,
+                        arrayOf(student!!),
                         "student details"
                     )
                 findNavController().navigate(action)

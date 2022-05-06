@@ -76,4 +76,12 @@ interface StudentsApi {
     suspend fun deleteAllStudents(
         @Header("Authorization") token: String = "Bearer " + UserData.token
     ): Response<Unit>
+
+    //@HTTP(method = "DELETE", path = "/StudentsAuthorize/api/students/DeleteStudents", hasBody = true)
+    //@HTTP(method = "DELETE", path = "/eihab/api/students/DeleteStudents", hasBody = true)
+    @HTTP(method = "DELETE", path = "$SUB_DOMAIN/api/students/DeleteStudents", hasBody = true)
+    suspend fun deleteSelectedStudents(
+        @Body deleteStudentsModel: DeleteStudentsModel,
+        @Header("Authorization") token: String = "Bearer " + UserData.token
+    ): Response<Unit>
 }

@@ -3,10 +3,10 @@ package com.bbk.studentsmvvm.util
 class Constants {
 
     companion object {
-        const val BASE_URL = "https://bsite.net"
-        const val SUB_DOMAIN = "/eihab"
-        //const val BASE_URL = "http://192.168.1.7"
-        //const val SUB_DOMAIN = "/StudentsAuthorize"
+        //const val BASE_URL = "https://bsite.net"
+        //const val SUB_DOMAIN = "/eihab"
+        const val BASE_URL = "http://192.168.1.7"
+        const val SUB_DOMAIN = "/StudentsAuthorize"
 
         const val PREFERENCES_NAME = "studentsmvvm_preferences"
         const val PREFERENCES_BACK_ONLINE = "backOnline"

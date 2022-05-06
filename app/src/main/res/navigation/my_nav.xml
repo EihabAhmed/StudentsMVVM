@@ -107,9 +107,8 @@
         android:label="delete_student_bottom_sheet"
         tools:layout="@layout/delete_student_bottom_sheet" >
         <argument
-            android:name="student"
-            app:argType="com.bbk.studentsmvvm.models.Student"
-            app:nullable="true" />
+            android:name="students"
+            app:argType="com.bbk.studentsmvvm.models.Student[]" />
         <action
             android:id="@+id/action_deleteStudentBottomSheet_to_studentDetailsFragment"
             app:destination="@id/studentDetailsFragment"

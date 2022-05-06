@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -21,22 +23,26 @@ import com.bbk.studentsmvvm.util.UserData
 import com.bbk.studentsmvvm.util.observeOnce
 import com.bbk.studentsmvvm.viewmodels.AllStudentsViewModel
 import com.bbk.studentsmvvm.viewmodels.DataStoreViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class AllStudentsFragment : Fragment() {
+class AllStudentsFragment : Fragment(), ActionMode.Callback {
 
     private val args by navArgs<AllStudentsFragmentArgs>()
 
     private var _binding: FragmentAllStudentsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var allStudentsViewModel: AllStudentsViewModel
+    private val allStudentsViewModel: AllStudentsViewModel by viewModels()
     private lateinit var dataStoreViewModel: DataStoreViewModel
-    private val mAdapter by lazy { AllStudentsAdapter() }
+
+    private val mAdapter: AllStudentsAdapter by lazy { AllStudentsAdapter(this) }
+
+    private lateinit var mActionMode: ActionMode
 
     private lateinit var networkListener: NetworkListener
 
@@ -45,10 +51,7 @@ class AllStudentsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        allStudentsViewModel =
-            ViewModelProvider(requireActivity())[AllStudentsViewModel::class.java]
-        dataStoreViewModel =
-            ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
+        dataStoreViewModel = ViewModelProvider(requireActivity())[DataStoreViewModel::class.java]
 
         lifecycleScope.launchWhenStarted {
             networkListener = NetworkListener()
@@ -80,6 +83,8 @@ class AllStudentsFragment : Fragment() {
         dataStoreViewModel.readBackOnline.observe(viewLifecycleOwner) {
             dataStoreViewModel.backOnline = it
         }
+
+        // TODO: handle backOnline and show controls that are hidden
 
         if (firstStart) {
             firstStart = false
@@ -124,6 +129,15 @@ class AllStudentsFragment : Fragment() {
         showShimmerEffect()
     }
 
+    private fun showSnackBar(message: String) {
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).setAction("Okay") {}
+            .show()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.all_students_menu, menu)
     }
@@ -143,11 +157,7 @@ class AllStudentsFragment : Fragment() {
     private fun deleteAllStudents() {
 
         if (!UserData.isAdmin) {
-            Toast.makeText(
-                requireContext(),
-                "Only admins can delete students",
-                Toast.LENGTH_SHORT
-            ).show()
+            showSnackBar("Only admins can delete students")
         } else if (binding.recyclerview.adapter!!.itemCount == 0) {
             Toast.makeText(
                 requireContext(),
@@ -158,7 +168,7 @@ class AllStudentsFragment : Fragment() {
             try {
                 val action =
                     AllStudentsFragmentDirections.actionAllStudentsFragmentToDeleteStudentBottomSheet(
-                        null,
+                        emptyArray(),
                         "all students"
                     )
                 findNavController().navigate(action)
@@ -269,5 +279,94 @@ class AllStudentsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        clearContextualActionMode()
+    }
+
+    override fun onCreateActionMode(actionMode: ActionMode?, menu: Menu?): Boolean {
+        actionMode?.menuInflater?.inflate(R.menu.students_contextual_menu, menu)
+        mActionMode = actionMode!!
+        applyStatusBarColor(R.color.contextualStatusBarColor)
+        return true
+    }
+
+    override fun onPrepareActionMode(actionMode: ActionMode?, menu: Menu?): Boolean {
+        return true
+    }
+
+    override fun onActionItemClicked(actionMode: ActionMode?, menu: MenuItem?): Boolean {
+
+        if (menu?.itemId == R.id.delete_students_menu) {
+
+            deleteSelectedStudents()
+
+//            mAdapter.selectedRecipes.forEach {
+//                mainViewModel.deleteFavoriteRecipe(it)
+//            }
+//
+//            showSnackBar("${mAdapter.selectedStudents.size} student(s) removed.")
+//
+//            mAdapter.multiSelection = false
+//            mAdapter.selectedStudents.clear()
+//            actionMode?.finish()
+
+        }
+
+        return true
+    }
+
+    private fun deleteSelectedStudents() {
+
+        if (!UserData.isAdmin) {
+            showSnackBar("Only admins can delete students")
+        } else if (dataStoreViewModel.networkStatus) {
+            try {
+                val action =
+                    AllStudentsFragmentDirections.actionAllStudentsFragmentToDeleteStudentBottomSheet(
+                        mAdapter.selectedStudents.toTypedArray(),
+                        "selected students"
+                    )
+                findNavController().navigate(action)
+            } catch (e: Exception) {
+                Log.d("deleteSelectedStudents", e.toString())
+            }
+        } else {
+            dataStoreViewModel.showNetworkStatus()
+        }
+    }
+
+    override fun onDestroyActionMode(actionMode: ActionMode?) {
+
+        mAdapter.myViewHolders.forEach { holder ->
+            mAdapter.changeStudentStyle(holder, R.color.cardBackgroundColor, R.color.strokeColor)
+        }
+
+        mAdapter.multiSelection = false
+        mAdapter.selectedStudents.clear()
+        applyStatusBarColor(R.color.statusBarColor)
+    }
+
+    private fun applyStatusBarColor(color: Int) {
+        requireActivity().window.statusBarColor = ContextCompat.getColor(requireActivity(), color)
+    }
+
+    fun applyActionModeTitle() {
+        when (mAdapter.selectedStudents.size) {
+            0 -> {
+                mActionMode.finish()
+                mAdapter.multiSelection = false
+            }
+            1 -> {
+                mActionMode.title = "1 student selected"
+            }
+            else -> {
+                mActionMode.title = "${mAdapter.selectedStudents.size} students selected"
+            }
+        }
+    }
+
+    private fun clearContextualActionMode() {
+        if (this::mActionMode.isInitialized) {
+            mActionMode.finish()
+        }
     }
 }

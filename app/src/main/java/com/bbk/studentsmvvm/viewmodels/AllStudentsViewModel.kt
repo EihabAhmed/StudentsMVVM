@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import androidx.lifecycle.*
 import com.bbk.studentsmvvm.data.Repository
 import com.bbk.studentsmvvm.data.database.entities.StudentEntity
+import com.bbk.studentsmvvm.models.DeleteStudentsModel
 import com.bbk.studentsmvvm.models.Student
 import com.bbk.studentsmvvm.models.Students
 import com.bbk.studentsmvvm.util.NetworkResult
@@ -64,6 +65,10 @@ class AllStudentsViewModel @Inject constructor(
 
     fun deleteAllStudents() = viewModelScope.launch {
         deleteAllStudentsSafeCall()
+    }
+
+    fun deleteSelectedStudents(deleteStudentsModel: DeleteStudentsModel) = viewModelScope.launch {
+        deleteSelectedStudentsSafeCall(deleteStudentsModel)
     }
 
     private suspend fun getAllStudentsSafeCall() {
@@ -132,6 +137,20 @@ class AllStudentsViewModel @Inject constructor(
         if (hasInternetConnection()) {
             try {
                 val response = repository.remote.deleteAllStudents()
+                deleteStudentsResponse.value = handleDeleteStudentResponse(response)
+            } catch (e: Exception) {
+                deleteStudentsResponse.value = NetworkResult.Error("Error deleting students")
+            }
+        } else {
+            deleteStudentsResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    private suspend fun deleteSelectedStudentsSafeCall(deleteStudentsModel: DeleteStudentsModel) {
+        deleteStudentsResponse.value = NetworkResult.Loading()
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.deleteSelectedStudents(deleteStudentsModel)
                 deleteStudentsResponse.value = handleDeleteStudentResponse(response)
             } catch (e: Exception) {
                 deleteStudentsResponse.value = NetworkResult.Error("Error deleting students")
