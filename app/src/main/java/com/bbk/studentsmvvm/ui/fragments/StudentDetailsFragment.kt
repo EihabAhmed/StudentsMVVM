@@ -58,7 +58,7 @@ class StudentDetailsFragment : Fragment() {
             override fun handleOnBackPressed() {
 //                if (modified) {
                     val action =
-                        StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(true)
+                        StudentDetailsFragmentDirections.actionStudentDetailsFragmentToAllStudentsFragment(modified)
                     findNavController().navigate(action)
 //                } else {
 //
@@ -67,8 +67,6 @@ class StudentDetailsFragment : Fragment() {
 //                    fragmentTransaction.addToBackStack(null)
 //                    fragmentTransaction.commit()
 //                }
-
-                // TODO: handle back button press and navigation back when the student details is modified and when not modified
             }
         })
     }
